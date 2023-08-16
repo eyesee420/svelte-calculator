@@ -11,7 +11,7 @@
         'content-type': 'application/json'
       }
     });
-
+ 
     total = await response.json();
    console.log(total);
   } 
