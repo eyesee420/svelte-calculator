@@ -16,7 +16,7 @@ export async function POST({ request }) {
   if (parts.length === 0) {
     return json({ error: 'Invalid input' }, { status: 400 });
   }
-  
+
   // Initialize stacks for operators and operands
   const operators = [];
   const operands = [];
@@ -34,7 +34,7 @@ export async function POST({ request }) {
     const operator = operators.pop();
     const operand2 = operands.pop();
     const operand1 = operands.pop();
-  
+    
     switch (operator) {
       case '+':
         operands.push(operand1 + operand2);
@@ -48,12 +48,17 @@ export async function POST({ request }) {
       case '/':
         operands.push(operand1 / operand2);
         break;
+      case '%':
+        operands.push(operand1 % operand2); // Adding modulus operation
+        break;
     }
   }
+  
   
   // Process each part of the input
   for (const part of parts) {
     if (['+', '-', '*', '/', '%'].includes(part)) {
+
       // Process operators
       while (
         operators.length > 0 &&
