@@ -29,54 +29,69 @@ export async function POST({ request }) {
     '/': 2,
   };
   
-  // Function to apply an operation on operands using an operator
-  function applyOperation() {
-    const operator = operators.pop();
-    const operand2 = operands.pop();
-    const operand1 = operands.pop();
-    
-    switch (operator) {
-      case '+':
-        operands.push(operand1 + operand2);
-        break;
-      case '-':
-        operands.push(operand1 - operand2);
-        break;
-      case '*':
-        operands.push(operand1 * operand2);
-        break;
-      case '/':
-        operands.push(operand1 / operand2);
-        break;
-      case '%':
-        operands.push(operand1 % operand2); // Adding modulus operation
-        break;
-    }
+ // Function to apply an operation on operands using an operator
+function applyOperation() {
+  // Pop the operator from the operators stack
+  const operator = operators.pop();
+  // Pop the second operand from the operands stack
+  const operand2 = operands.pop();
+  // Pop the first operand from the operands stack
+  const operand1 = operands.pop();
+  
+  // Perform the appropriate operation based on the operator
+  switch (operator) {
+    case '+':
+      operands.push(operand1 + operand2); // Add the operands
+      break;
+    case '-':
+      operands.push(operand1 - operand2); // Subtract the operands
+      break;
+    case '*':
+      operands.push(operand1 * operand2); // Multiply the operands
+      break;
+    case '/':
+      operands.push(operand1 / operand2); // Divide the operands
+      break;
+    case '%':
+      operands.push(operand1 % operand2); // Modulus operation on the operands
+      break;
   }
-  
-  
-  // Process each part of the input
-  for (const part of parts) {
-    if (['+', '-', '*', '/', '%'].includes(part)) {
+}
 
-      // Process operators
-      while (
-        operators.length > 0 &&
-        precedence[operators[operators.length - 1]] >= precedence[part]
-      ) {
-        applyOperation();
-      }
-      operators.push(part);
+  
+  
+// Loop through each element in the 'parts' array
+for (const part of parts) {
+  // Check if the current part is one of the supported operators
+  if (['+', '-', '*', '/', '%'].includes(part)) {
+    
+    // Process operators
+    // Continue applying operations as long as there are operators in the stack
+    // and the precedence of the operator at the top of the stack is greater
+    // than or equal to the precedence of the current operator 
+    while (
+      operators.length > 0 &&
+      precedence[operators[operators.length - 1]] >= precedence[part]
+    ) {
+      applyOperation(); // Apply the operation using operands and operators
+    }
+    // Push the current operator onto the stack
+    operators.push(part);
+  } else {
+    // Process numbers
+    // Convert the current part to a floating-point number
+    const number = parseFloat(part);
+    // Check if the conversion was successful (not NaN)
+    if (!isNaN(number)) {
+      operands.push(number); // Push the valid number into the operands stack
     } else {
-      // Process numbers
-      const number = parseFloat(part);
-      if (!isNaN(number)) {
-        operands.push(number);
-      } else {
-        return json({ error: 'Invalid input' }, { status: 400 });
-      }
+      // Return an error response if the part is not a valid number
+      const error = 'Invalid input' 
+      return json( error);
     }
   }
+}
+
   
   // Apply remaining operations in the stack
   while (operators.length > 0) {
